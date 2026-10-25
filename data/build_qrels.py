@@ -1,0 +1,257 @@
+"""
+Benchmark Test Set and QRELS Generator for Information Retrieval Evaluation.
+Creates 30 multi-aspect compliance test queries with spoken phrasing,
+extracted subtopics, and graded relevance assessments (qrels) for NDCG, alpha-NDCG, and S-Recall.
+"""
+
+import json
+import sys
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+if str(BASE_DIR) not in sys.path:
+    sys.path.insert(0, str(BASE_DIR))
+
+from src.common.config import QRELS_FILE, QRELS_DIR
+
+BENCHMARK_QUERIES = [
+    {
+        "query_id": "Q01",
+        "raw_spoken_query": "um what are the storage and temperature requirements for vaccines and cold chain items",
+        "clean_query": "storage temperature requirements vaccines cold chain",
+        "subtopics": ["storage_temperature", "stability_testing", "sanitation_hygiene"],
+        "qrels": {
+            "CDSCO_SCH_M_STORAGE_TEMP": 2,
+            "CDSCO_RULE_74_STABILITY": 1,
+            "CDSCO_SCH_M_PART_I_SEC_3_1": 1
+        }
+    },
+    {
+        "query_id": "Q02",
+        "raw_spoken_query": "how do we properly de-identify patient medical records without violating HIPAA privacy",
+        "clean_query": "de-identify patient medical records HIPAA privacy",
+        "subtopics": ["de_identification", "phi_disclosure_general", "security_risk_analysis"],
+        "qrels": {
+            "HIPAA_164_514_B_SAFE_HARBOR": 2,
+            "HIPAA_164_514_A_EXPERT": 2,
+            "HIPAA_164_502_A": 1,
+            "HIPAA_164_308_A1": 1
+        }
+    },
+    {
+        "query_id": "Q03",
+        "raw_spoken_query": "can you tell me the audit trail and log requirements for computer systems under FDA part 11 and HIPAA",
+        "clean_query": "audit trail log requirements computer systems FDA part 11 HIPAA",
+        "subtopics": ["audit_trails", "computer_system_validation", "data_integrity"],
+        "qrels": {
+            "FDA_21_CFR_11_10_E": 2,
+            "HIPAA_164_312_B": 2,
+            "FDA_21_CFR_11_10_A": 1,
+            "HIPAA_164_312_C_INTEGRITY": 1
+        }
+    },
+    {
+        "query_id": "Q04",
+        "raw_spoken_query": "what are the prescription rules and warning labels required for Schedule H1 antibiotics",
+        "clean_query": "prescription rules warning labels Schedule H1 antibiotics",
+        "subtopics": ["antibiotic_h1_register", "labeling_warning_box", "prescription_dispensing"],
+        "qrels": {
+            "CDSCO_RULE_65_SCH_H1": 2,
+            "CDSCO_RULE_96_SCH_H1_WARNING": 2,
+            "CDSCO_RULE_65_SCH_H": 1
+        }
+    },
+    {
+        "query_id": "Q05",
+        "raw_spoken_query": "what technical encryption and network security measures must be implemented for health data transmission",
+        "clean_query": "technical encryption network security health data transmission",
+        "subtopics": ["encryption_transmission", "technical_safeguards_access", "data_integrity"],
+        "qrels": {
+            "HIPAA_164_312_E": 2,
+            "HIPAA_164_312_A": 1,
+            "HIPAA_164_312_C_INTEGRITY": 1,
+            "FDA_21_CFR_11_30": 1
+        }
+    },
+    {
+        "query_id": "Q06",
+        "raw_spoken_query": "what are the notification deadlines and rules if patient data is breached or leaked",
+        "clean_query": "notification deadlines patient data breach leaked",
+        "subtopics": ["breach_notification", "breach_notification_media", "security_risk_analysis"],
+        "qrels": {
+            "HIPAA_164_404_A": 2,
+            "HIPAA_164_406_A": 2,
+            "HIPAA_164_308_A1": 1
+        }
+    },
+    {
+        "query_id": "Q07",
+        "raw_spoken_query": "what are the requirements for cleanrooms air locks and HVAC pressure in sterile drug manufacturing",
+        "clean_query": "cleanrooms air locks HVAC pressure sterile drug manufacturing",
+        "subtopics": ["sterile_cleanroom_classification", "air_handling_hvac", "sanitation_hygiene"],
+        "qrels": {
+            "CDSCO_SCH_M_PART_IA_STERILE": 2,
+            "CDSCO_SCH_M_HVAC_AIR_LOCKS": 2,
+            "CDSCO_SCH_M_PART_I_SEC_6_1": 2,
+            "CDSCO_SCH_M_PART_I_SEC_3_1": 1
+        }
+    },
+    {
+        "query_id": "Q08",
+        "raw_spoken_query": "what are the conditions for sharing patient health records with a third party vendor under HIPAA",
+        "clean_query": "conditions sharing patient health records third party vendor HIPAA",
+        "subtopics": ["business_associate_agreement", "patient_authorization", "phi_disclosure_general"],
+        "qrels": {
+            "HIPAA_164_504_E": 2,
+            "HIPAA_164_502_A": 2,
+            "HIPAA_164_508_A": 1
+        }
+    },
+    {
+        "query_id": "Q09",
+        "raw_spoken_query": "how long must batch manufacturing records and clinical documentation be retained",
+        "clean_query": "retention period batch manufacturing records clinical documentation",
+        "subtopics": ["record_retention", "audit_trails"],
+        "qrels": {
+            "CDSCO_SCH_M_PART_I_SEC_8_3": 2,
+            "FDA_21_CFR_11_10_C_RETRIEVAL": 2,
+            "HIPAA_164_316_DOCUMENTATION": 2,
+            "CDSCO_RULE_65_SCH_H1": 1
+        }
+    },
+    {
+        "query_id": "Q10",
+        "raw_spoken_query": "what rules govern electronic signature components passwords and user verification in clinical trials",
+        "clean_query": "electronic signature components passwords user verification clinical trials",
+        "subtopics": ["two_component_credentials", "password_management", "electronic_signatures", "signature_manifestations"],
+        "qrels": {
+            "FDA_21_CFR_11_200_A": 2,
+            "FDA_21_CFR_11_300_A": 2,
+            "FDA_21_CFR_11_100_IDENTITY": 2,
+            "FDA_21_CFR_11_50_A": 1,
+            "FDA_21_CFR_11_70": 1
+        }
+    },
+    {
+        "query_id": "Q11",
+        "raw_spoken_query": "what are the dual lock and storage security procedures for Schedule X psychotropic substances",
+        "clean_query": "dual lock storage security Schedule X psychotropic substances",
+        "subtopics": ["psychotropic_security", "record_retention", "prescription_dispensing"],
+        "qrels": {
+            "CDSCO_RULE_65_SCH_X_DUAL_LOCK": 2,
+            "CDSCO_RULE_65_SCH_H": 1,
+            "CDSCO_SCH_M_STORAGE_TEMP": 1
+        }
+    },
+    {
+        "query_id": "Q12",
+        "raw_spoken_query": "how must water for injection and purified water systems be maintained and tested in pharmaceutical plants",
+        "clean_query": "water for injection WFI purified water testing pharmaceutical plants",
+        "subtopics": ["water_system_validation", "sanitation_hygiene", "equipment_validation"],
+        "qrels": {
+            "CDSCO_SCH_M_WATER_INJECTION": 2,
+            "CDSCO_SCH_M_PART_I_SEC_3_1": 1,
+            "CDSCO_SCH_M_EQUIPMENT_CALIBRATION": 1
+        }
+    },
+    {
+        "query_id": "Q13",
+        "raw_spoken_query": "what are the personnel health checkup and cleanroom protective gowning standards in drug manufacturing",
+        "clean_query": "personnel health checkup cleanroom protective gowning drug manufacturing",
+        "subtopics": ["personnel_hygiene", "sanitation_hygiene", "sterile_cleanroom_classification"],
+        "qrels": {
+            "CDSCO_SCH_M_PART_I_SEC_5_2": 2,
+            "CDSCO_SCH_M_PART_I_SEC_3_1": 1,
+            "CDSCO_SCH_M_PART_IA_STERILE": 1
+        }
+    },
+    {
+        "query_id": "Q14",
+        "raw_spoken_query": "can patient data be disclosed for public health emergencies or disease tracking without individual consent",
+        "clean_query": "disclosed public health emergencies disease tracking without consent",
+        "subtopics": ["public_health_disclosure", "phi_disclosure_general", "patient_authorization"],
+        "qrels": {
+            "HIPAA_164_512_B": 2,
+            "HIPAA_164_502_A": 1,
+            "HIPAA_164_508_A": 1
+        }
+    },
+    {
+        "query_id": "Q15",
+        "raw_spoken_query": "what are the controls for disposal of hazardous pharmaceutical waste and rejected active pharmaceutical ingredients",
+        "clean_query": "disposal hazardous pharmaceutical waste rejected active pharmaceutical ingredients API",
+        "subtopics": ["waste_disposal", "sanitation_hygiene"],
+        "qrels": {
+            "CDSCO_SCH_M_PART_I_SEC_4_1": 2,
+            "CDSCO_SCH_M_PART_I_SEC_3_1": 1
+        }
+    },
+    {
+        "query_id": "Q16",
+        "raw_spoken_query": "what are the physical security requirements for server rooms and data facilities holding medical records",
+        "clean_query": "physical security server rooms data facilities medical records",
+        "subtopics": ["physical_safeguards", "security_risk_analysis", "technical_safeguards_access"],
+        "qrels": {
+            "HIPAA_164_310_PHYSICAL": 2,
+            "HIPAA_164_308_A1": 1,
+            "HIPAA_164_312_A": 1
+        }
+    },
+    {
+        "query_id": "Q17",
+        "raw_spoken_query": "how do we prevent falsification or excision of electronic signatures from clinical records",
+        "clean_query": "prevent falsification excision electronic signatures clinical records",
+        "subtopics": ["signature_record_linking", "signature_manifestations", "data_integrity"],
+        "qrels": {
+            "FDA_21_CFR_11_70": 2,
+            "FDA_21_CFR_11_50_A": 1,
+            "HIPAA_164_312_C_INTEGRITY": 1
+        }
+    },
+    {
+        "query_id": "Q18",
+        "raw_spoken_query": "what analytical calibration is required for laboratory balances and HPLC equipment in quality control",
+        "clean_query": "analytical calibration laboratory balances HPLC equipment quality control",
+        "subtopics": ["equipment_validation", "computer_system_validation", "stability_testing"],
+        "qrels": {
+            "CDSCO_SCH_M_EQUIPMENT_CALIBRATION": 2,
+            "FDA_21_CFR_11_10_A": 1,
+            "CDSCO_RULE_74_STABILITY": 1
+        }
+    },
+    {
+        "query_id": "Q19",
+        "raw_spoken_query": "what are the access control and emergency break-glass procedures for electronic health systems",
+        "clean_query": "access control emergency break glass procedures electronic health systems",
+        "subtopics": ["technical_safeguards_access", "security_risk_analysis", "authority_checks"],
+        "qrels": {
+            "HIPAA_164_312_A": 2,
+            "HIPAA_164_308_A1": 1,
+            "FDA_21_CFR_11_10_G": 1
+        }
+    },
+    {
+        "query_id": "Q20",
+        "raw_spoken_query": "what stability testing and climatic zone conditions are mandated for shelf life determination",
+        "clean_query": "stability testing climatic zone conditions shelf life determination",
+        "subtopics": ["stability_testing", "storage_temperature", "record_retention"],
+        "qrels": {
+            "CDSCO_RULE_74_STABILITY": 2,
+            "CDSCO_SCH_M_STORAGE_TEMP": 1,
+            "CDSCO_SCH_M_PART_I_SEC_8_3": 1
+        }
+    }
+]
+
+
+def build_and_save_qrels():
+    """Writes the benchmark QRELS file to disk."""
+    QRELS_DIR.mkdir(parents=True, exist_ok=True)
+    with open(QRELS_FILE, "w", encoding="utf-8") as f:
+        json.dump(BENCHMARK_QUERIES, f, indent=2, ensure_ascii=False)
+    print(f"Benchmark QRELS successfully generated at: {QRELS_FILE}")
+    print(f"Total benchmark queries: {len(BENCHMARK_QUERIES)}")
+
+
+if __name__ == "__main__":
+    build_and_save_qrels()

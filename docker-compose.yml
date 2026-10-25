@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  compliance-api:
+    build: .
+    container_name: compliance_api
+    command: uvicorn src.api.server:app --host 0.0.0.0 --port 8000
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+
+  compliance-ui:
+    build: .
+    container_name: compliance_ui
+    command: streamlit run frontend/app.py --server.port 8501 --server.address 0.0.0.0
+    ports:
+      - "8501:8501"
+    environment:
+      - PYTHONUNBUFFERED=1
+    depends_on:
+      - compliance-api
+    restart: unless-stopped
